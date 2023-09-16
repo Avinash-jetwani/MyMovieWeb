@@ -33,7 +33,6 @@ const Signup = () => {
       <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
       <input type="date" placeholder="Date of Birth" onChange={(e) => setDob(e.target.value)} />
       <input type="text" placeholder="Country" onChange={(e) => setCountry(e.target.value)} />
-      {/* You can add more fields for preferences */}
       <button onClick={registerUser}>Sign Up</button>
     </div>
   );

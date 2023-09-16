@@ -7,8 +7,13 @@ const cors = require('cors');
 const app = express();
 const port = 3001;
 
+// CORS options
+const corsOptions = {
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 // MySQL connection
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -144,9 +149,17 @@ app.post('/login', (req, res) => {
 });
 
 // dashboard
-app.get('/dashboard', authenticateJWT, (req, res) => {
-  const userId = req.user.id; // Extracted from JWT
-  // Your SQL query to fetch data for the dashboard
+app.get('/dashboard', (req, res) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, 'your_secret_key', (err, user) => {
+    if (err) return res.sendStatus(403);
+    // Your logic here
+    res.json({ data: 'some data' });
+  });
 });
 
 
