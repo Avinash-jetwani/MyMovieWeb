@@ -2,12 +2,13 @@ const express = require('express');
 const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 
 const app = express();
 const port = 3001;
 
 app.use(express.json());
-
+app.use(cors());
 // MySQL connection
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -140,6 +141,12 @@ app.post('/login', (req, res) => {
       res.status(401).json({ error: 'Invalid username or password' });
     }
   });
+});
+
+// dashboard
+app.get('/dashboard', authenticateJWT, (req, res) => {
+  const userId = req.user.id; // Extracted from JWT
+  // Your SQL query to fetch data for the dashboard
 });
 
 
