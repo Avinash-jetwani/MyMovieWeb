@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Text from '../StyledComponents';
 
 const Signup = () => {
   const [username, setUsername] = useState('');
@@ -28,6 +29,7 @@ const Signup = () => {
 
   return (
     <div>
+    <Text>This is some text.</Text>;
       <input type="text" placeholder="Username" onChange={(e) => setUsername(e.target.value)} />
       <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
       <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
