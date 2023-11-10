@@ -108,6 +108,10 @@ app.post('/signup', async (req, res) => {
   const { username, email, password, dob, country, preferences } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  if (!username || !email || !password || !dob || !country) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
   connection.query('INSERT INTO users (username, email, password, dob, country, preferences) VALUES (?, ?, ?, ?, ?, ?)', 
   [username, email, hashedPassword, dob, country, JSON.stringify(preferences)], 
   (err, result) => {
@@ -115,9 +119,9 @@ app.post('/signup', async (req, res) => {
       console.error("Error inserting new user:", err);
       if (err.code === 'ER_DUP_ENTRY') {
         if (err.sqlMessage.indexOf('username') > 0) {
-          return res.status(400).json({ error: 'Username already exists' });
+          return res.status(400).json({ error: 'Username already exists!' });
         } else if (err.sqlMessage.indexOf('email') > 0) {
-          return res.status(400).json({ error: 'Email already exists' });
+          return res.status(400).json({ error: 'Email already exists!' });
         }
       }
       return res.status(500).json({ error: "Internal Server Error", message: err.message });
