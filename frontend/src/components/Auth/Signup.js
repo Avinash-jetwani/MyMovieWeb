@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Text from '../StyledComponents';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
   const [username, setUsername] = useState('');
@@ -8,7 +10,7 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [dob, setDob] = useState('');
   const [country, setCountry] = useState('');
-  const [preferences, setPreferences] = useState({});
+  const navigate = useNavigate();
 
   const registerUser = () => {
     axios.post('http://localhost:3001/signup', {
@@ -16,11 +18,10 @@ const Signup = () => {
       email,
       password,
       dob,
-      country,
-      preferences
+      country
     })
     .then(response => {
-      // Handle success
+      navigate('/login');
     })
     .catch(error => {
       // Handle error
@@ -36,6 +37,7 @@ const Signup = () => {
       <input type="date" placeholder="Date of Birth" onChange={(e) => setDob(e.target.value)} />
       <input type="text" placeholder="Country" onChange={(e) => setCountry(e.target.value)} />
       <button onClick={registerUser}>Sign Up</button>
+      <Link to="/login">Already have an account? Log in</Link>
     </div>
   );
 };

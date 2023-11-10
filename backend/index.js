@@ -141,7 +141,7 @@ app.post('/login', (req, res) => {
 
     if (match) {
       const token = jwt.sign({ id: user.id }, 'your_secret_key', { expiresIn: '1h' });
-      res.json({ message: 'Logged in successfully', token });
+      res.json({ message: 'Logged in successfully', token, username: user.username });
     } else {
       res.status(401).json({ error: 'Invalid username or password' });
     }
