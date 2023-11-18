@@ -130,27 +130,37 @@ app.post('/signup', async (req, res) => {
   });
 });
 
-// Login 
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
+
   connection.query('SELECT * FROM users WHERE username = ?', [username], async (err, results) => {
-    if (err || results.length === 0) {
-      res.status(401).json({ error: 'Invalid username or password' });
-      return;
+    if (err) {
+      return res.status(500).json({ error: 'An error occurred while processing your request' });
+    }
+
+    if (results.length === 0) {
+      // Username does not exist
+      return res.status(401).json({ error: 'Username does not exist. Please sign up.' });
     }
 
     const user = results[0];
     const match = await bcrypt.compare(password, user.password);
 
-    if (match) {
-      const token = jwt.sign({ id: user.id }, 'your_secret_key', { expiresIn: '1h' });
-      res.json({ message: 'Logged in successfully', token, username: user.username });
-    } else {
-      res.status(401).json({ error: 'Invalid username or password' });
+    if (!match) {
+      // Password does not match
+      return res.status(401).json({ error: 'Incorrect password. Please try again.' });
     }
+
+    // Successful login
+    const token = jwt.sign({ id: user.id }, 'your_secret_key', { expiresIn: '1h' });
+    res.json({ message: 'Logged in successfully', token, username: user.username });
   });
 });
+
 
 // dashboard
 app.get('/dashboard', (req, res) => {
