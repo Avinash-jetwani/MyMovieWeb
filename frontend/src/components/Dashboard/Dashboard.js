@@ -21,7 +21,8 @@ export default function Dashboard() {
   return (
     <div>
       <h2>On dashboard</h2>
-      <h2>Welcome, {username}</h2> {/* Display username */}
+      <h2>Welcome, {username}</h2> 
+      <Link to="/profile">Edit Profile</Link>
       <Link to="/logout">Logout</Link>
     </div>
   );

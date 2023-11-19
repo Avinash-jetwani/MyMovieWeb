@@ -9,11 +9,14 @@ const port = 3001;
 
 // CORS options
 const corsOptions = {
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: 'http://localhost:3000', // Replace with your client's URL
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
+app.use(cors(corsOptions));
+
 
 app.use(express.json());
-app.use(cors(corsOptions));
+
 // MySQL connection
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -32,10 +35,13 @@ connection.connect((err) => {
 
 // Middleware for JWT authentication
 const authenticateJWT = (req, res, next) => {
-  const token = req.header('Authorization');
-  if (token) {
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    const token = authHeader.split(' ')[1];
+    console.log("Received token:", token); // Add this line
     jwt.verify(token, 'your_secret_key', (err, user) => {
       if (err) {
+        console.error("Token verification error:", err); // Add this line
         return res.sendStatus(403);
       }
       req.user = user;
@@ -45,6 +51,7 @@ const authenticateJWT = (req, res, next) => {
     res.sendStatus(401);
   }
 };
+
 
 // Read all movies
 app.get('/movies', authenticateJWT, (req, res) => {
@@ -176,7 +183,67 @@ app.get('/dashboard', (req, res) => {
   });
 });
 
+// Edit user
+app.get('/user/profile', authenticateJWT, (req, res) => {
+  const userId = req.user.id;
 
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  connection.query('SELECT username, email, dob, country FROM users WHERE id = ?', [userId], (err, results) => {
+    if (err) {
+      console.error("Error fetching user data:", err);
+      return res.status(500).json({ error: "Internal Server Error", message: err.message });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = results[0];
+    res.json(user);
+  });
+});
+
+app.put('/user/profile', authenticateJWT, async (req, res) => {
+  const userId = req.user.id; // Assuming the user ID is stored in the JWT
+  const { username, email, dob, country } = req.body;
+
+  // Check if username or email already exists (excluding the current user)
+  connection.query('SELECT * FROM users WHERE (username = ? OR email = ?) AND id != ?', 
+  [username, email, userId], (err, results) => {
+    if (err) {
+      console.error("Error checking existing user data:", err);
+      return res.status(500).json({ error: "Internal Server Error", message: err.message });
+    }
+
+    if (results.length > 0) {
+      // Username or email already exists
+      return res.status(409).json({ error: 'Username or email already exists' });
+    }
+
+    // Proceed with updating the user's profile
+    connection.query('UPDATE users SET username = ?, email = ?, dob = ?, country = ? WHERE id = ?', 
+    [username, email, dob, country, userId], 
+    (err, result) => {
+      if (err) {
+        console.error("Error updating user data:", err);
+        return res.status(500).json({ error: "Internal Server Error", message: err.message });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.json({ message: "User profile updated successfully" });
+    });
+  });
+});
+
+
+
+// 
 // Rate a movie
 app.post('/movies/:id/rate', authenticateJWT, (req, res) => {
   const userId = req.user.id;
