@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "mongodb": "^6.0.0",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "react-loader-spinner": "^5.4.5"
   }
 }

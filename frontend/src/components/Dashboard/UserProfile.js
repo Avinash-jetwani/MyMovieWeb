@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { countries } from 'countries-list';
+import { TailSpin } from 'react-loader-spinner'; 
 
 const customStyles = {
     control: (provided) => ({
@@ -56,6 +57,7 @@ const UserProfile = () => {
     country: ''
     // Add other fields as necessary
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const [serverError, setServerError] = useState('');
 
@@ -64,7 +66,6 @@ const UserProfile = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-  
     axios.get('http://localhost:3001/user/profile', {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -126,7 +127,7 @@ const UserProfile = () => {
       console.log('Validation failed'); // Debugging log
       return;
     }
-
+    setIsLoading(true);
     axios.put('http://localhost:3001/user/profile', userData, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -141,6 +142,9 @@ const UserProfile = () => {
         if (error.response && error.response.status === 409) {
           setServerError('Username or email already exists');
         }
+      })
+      .finally(() => {
+        setIsLoading(false); // Stop loading
       });
     };
 
@@ -185,7 +189,9 @@ const UserProfile = () => {
         />
         {errors.country && <div className="error">{errors.country}</div>}
 
-        <button onClick={handleSubmit}>Save Changes</button>
+        <button onClick={handleSubmit} disabled={isLoading}>
+          {isLoading ? <TailSpin color="#00BFFF" height={20} width={20} /> : 'Save Changes'}
+        </button>
         {serverError && <div className="error">{serverError}</div>}
       </form>
     </div>

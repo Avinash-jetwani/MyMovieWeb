@@ -2,15 +2,22 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { TailSpin } from 'react-loader-spinner';
+
+const LoadingSpinner = () => (
+  <TailSpin color="#00BFFF" height={100} width={100} />
+);
+
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false); 
   const [usernameError, setUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [serverError, setServerError] = useState('');
   const navigate = useNavigate();
-
+  
   const validateUsername = () => {
     if (!username) {
       setUsernameError('Username is required');
@@ -33,6 +40,7 @@ const Login = () => {
     if (!validateUsername() || !validatePassword()) {
       return;
     }
+    setIsLoading(true); // Start loading
     axios.post('http://localhost:3001/login', {
       username,
       password
@@ -48,8 +56,11 @@ const Login = () => {
       } else {
         setServerError('An unexpected error occurred');
       }
+    })
+    .finally(() => {
+      setIsLoading(false); // Stop loading
     });
-  };
+  };  
 
   return (
     <div>
@@ -59,7 +70,10 @@ const Login = () => {
       <input type="password" placeholder="Password" onChange={(e) => { setPassword(e.target.value); setServerError(''); }} />
       {passwordError && <div className="error">{passwordError}</div>}
 
-      <button onClick={loginUser}>Login</button>
+      {isLoading && <LoadingSpinner />}
+      <button onClick={loginUser} disabled={isLoading}>
+        {isLoading ? 'Logging in...' : 'Login'}
+      </button>
       {serverError && <div className="error">{serverError}</div>}
 
       <Link to="/signup">Don't have an account? Sign up</Link>

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { countries } from 'countries-list'; 
 import Select from 'react-select';
+import { TailSpin } from 'react-loader-spinner';
 
 // Custom styles for react-select
 const customStyles = {
@@ -59,6 +60,8 @@ const Signup = () => {
   const [dobError, setDobError] = useState('');
   const [countryError, setCountryError] = useState('');
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const validateUsername = () => {
     if (!username) {
       setUsernameError('Username is required');
@@ -108,6 +111,7 @@ const Signup = () => {
     if (!validateUsername() || !validateEmail() || !validatePassword() || !validateDob() || !validateCountry()) {
       return; 
     }
+    setIsLoading(true);
     axios.post('http://localhost:3001/signup', {
       username,
       email,
@@ -124,7 +128,10 @@ const Signup = () => {
       } else {
         setServerError('An unexpected error occurred');
       }
-    });    
+    })
+    .finally(() => {
+      setIsLoading(false); // Stop loading
+    });     
   };
 
   return (
@@ -151,7 +158,9 @@ const Signup = () => {
         />
       {countryError && <div className="error">{countryError}</div>}
 
-      <button onClick={registerUser}>Sign Up</button>
+      <button onClick={registerUser} disabled={isLoading}>
+        {isLoading ? <TailSpin color="#00BFFF" height={20} width={20} /> : 'Sign Up'}
+      </button>
       <Link to="/login">Already have an account? Log in</Link>
 
       {serverError && <div className="error">{serverError}</div>}
