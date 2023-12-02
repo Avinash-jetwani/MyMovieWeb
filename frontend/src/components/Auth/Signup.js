@@ -6,19 +6,23 @@ import { useNavigate } from 'react-router-dom';
 import { countries } from 'countries-list'; 
 import Select from 'react-select';
 import { TailSpin } from 'react-loader-spinner';
-
+import './Signup.css'; 
 // Custom styles for react-select
 const customStyles = {
   control: (provided) => ({
     ...provided,
-    backgroundColor: 'black',
-    color: 'white',
-    width: '300px', // Adjust width as needed
+    backgroundColor: 'transparent', // Set to transparent instead of white
+    borderColor: 'var(--gray)', // Use the gray color variable
+    borderWidth: '2px',
+    boxShadow: 'none', // Removes any existing shadows
+    '&:hover': {
+      borderColor: 'var(--primary)', // On hover, use the primary color
+    },
   }),
   option: (provided, state) => ({
     ...provided,
-    backgroundColor: state.isSelected ? 'gray' : 'black',
-    color: 'white',
+    backgroundColor: state.isSelected ? 'gray' : 'white',
+    color: 'black',
     '&:hover': {
       backgroundColor: 'gray',
     },
@@ -29,9 +33,12 @@ const customStyles = {
   }),
   menu: (provided) => ({
     ...provided,
-    backgroundColor: 'black',
-    width: '300px', // Make sure this matches the width of the control
-    // You can also add other styles here as needed
+    backgroundColor: 'white',
+    borderColor: 'var(--gray)',
+    borderWidth: '2px',
+    borderRadius: '4px',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+    overflow: 'hidden', // Prevents the border from being cut off
   }),
 };
 
@@ -135,38 +142,86 @@ const Signup = () => {
   };
 
   return (
-    <div>
-    <Text>This is some text.</Text>;
-      <input type="text" placeholder="Username" onChange={(e) => { setUsername(e.target.value); setServerError(''); }} />
-        {usernameError && <div className="error">{usernameError}</div>}
-        
-      <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-        {emailError && <div className="error">{emailError}</div>}
+    <div className="container">
+      <div className="form-card">
+        <h2>Sign Up</h2>
 
-      <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
-        {passwordError && <div className="error">{passwordError}</div>}
+        <div className="input-container">
+          <input 
+            type="text"
+            id="username"
+            placeholder=" "
+            value={username}
+            onChange={(e) => { setUsername(e.target.value); setServerError(''); }}
+            className={`input-field ${username ? 'not-empty' : 'empty'}`}
+          />
+          <label htmlFor="username" className="floating-label">Username</label>
+          {usernameError && <div className="error">{usernameError}</div>}
+        </div>
 
-      <input type="date" placeholder="Date of Birth" onChange={(e) => setDob(e.target.value)} />
-        {dobError && <div className="error">{dobError}</div>}
+        <div className="input-container">
+          <input 
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => { setEmail(e.target.value); setServerError(''); }}
+            className={`input-field ${email ? 'not-empty' : 'empty'}`}
+          />
+          <label htmlFor="email" className="floating-label">Email</label>
+          {emailError && <div className="error">{emailError}</div>}
+        </div>
 
-        <Select 
-          options={countryOptions} 
-          value={selectedCountry} 
-          onChange={setSelectedCountry} 
-          placeholder="Select Country"
-          styles={customStyles}
-        />
-      {countryError && <div className="error">{countryError}</div>}
+        <div className="input-container">
+          <input 
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => { setPassword(e.target.value); setServerError(''); }}
+            className={`input-field ${password ? 'not-empty' : 'empty'}`}
+          />
+          <label htmlFor="password" className="floating-label">Password</label>
+          {passwordError && <div className="error">{passwordError}</div>}
+        </div>
 
-      <button onClick={registerUser} disabled={isLoading}>
-        {isLoading ? <TailSpin color="#00BFFF" height={20} width={20} /> : 'Sign Up'}
-      </button>
-      <Link to="/login">Already have an account? Log in</Link>
+        <div className="input-container">
+          <input 
+            type="date"
+            id="dob"
+            value={dob}
+            onChange={(e) => { setDob(e.target.value); setServerError(''); }}
+            className={`input-field ${dob ? 'not-empty' : ''}`}
+          />
+          <label htmlFor="dob" className="floating-label">Date of Birth</label>
+          {dobError && <div className="error">{dobError}</div>}
+        </div>
 
-      {serverError && <div className="error">{serverError}</div>}
-    </div>
-    
+        <div className="input-container">
+          <Select 
+            options={countryOptions}
+            value={selectedCountry}
+            onChange={setSelectedCountry}
+            placeholder="Select Country"
+            styles={customStyles}
+            className={`input-field ${selectedCountry ? 'not-empty' : ''}`}
+          />
+          {countryError && <div className="error">{countryError}</div>}
+        </div>
+
+        <button 
+          onClick={registerUser} 
+          disabled={isLoading}
+          className="button"
+        >
+          {isLoading ? <TailSpin color="#00BFFF" height={20} width={20} /> : 'Sign Up'}
+        </button>
+
+        <Link to="/login" className="link">Already have an account? Log in</Link>
+
+        {serverError && <div className="error">{serverError}</div>}
+      </div>
+    </div> 
   );
 };
+
 
 export default Signup;
