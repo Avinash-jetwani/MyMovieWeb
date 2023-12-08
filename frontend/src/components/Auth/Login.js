@@ -3,10 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { TailSpin } from 'react-loader-spinner';
-
-const LoadingSpinner = () => (
-  <TailSpin color="#00BFFF" height={100} width={100} />
-);
+import './Login.css'; 
 
 
 const Login = () => {
@@ -63,22 +60,50 @@ const Login = () => {
   };  
 
   return (
-    <div>
-      <input type="text" placeholder="Username" onChange={(e) => { setUsername(e.target.value); setServerError(''); }} />
-      {usernameError && <div className="error">{usernameError}</div>}
+  <div className="container">
+    <div className="form-card">
+      <h2 className='h2'>Log in</h2>
 
-      <input type="password" placeholder="Password" onChange={(e) => { setPassword(e.target.value); setServerError(''); }} />
-      {passwordError && <div className="error">{passwordError}</div>}
+      <div className="input-container">
+          <input 
+            type="text"
+            id="username"
+            placeholder=" "
+            value={username}
+            onChange={(e) => { setUsername(e.target.value); setServerError(''); }}
+            className={`input-field ${username ? 'not-empty' : 'empty'}`}
+          />
+          <label htmlFor="username" className="floating-label">Username</label>
+          {usernameError && <div className="error">{usernameError}</div>}
+      </div>
 
-      {isLoading && <LoadingSpinner />}
-      <button onClick={loginUser} disabled={isLoading}>
-        {isLoading ? 'Logging in...' : 'Login'}
+      <div className="input-container">
+          <input 
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => { setPassword(e.target.value); setServerError(''); }}
+            className={`input-field ${password ? 'not-empty' : 'empty'}`}
+          />
+          <label htmlFor="password" className="floating-label">Password</label>
+          {passwordError && <div className="error">{passwordError}</div>}
+      </div>
+
+      <button 
+        onClick={loginUser} 
+        disabled={isLoading}
+        className="button"
+        >
+        {isLoading ? <TailSpin color="#00BFFF" height={20} width={20} /> :  'Log in'}
       </button>
       {serverError && <div className="error">{serverError}</div>}
 
-      <Link to="/signup">Don't have an account? Sign up</Link>
+      <Link to="/signup" className="link">Don't have an account? Sign up</Link>
     </div>
+  </div>
   );
 };
 
 export default Login;
+
+

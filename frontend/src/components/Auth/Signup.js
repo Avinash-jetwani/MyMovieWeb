@@ -144,7 +144,7 @@ const Signup = () => {
   return (
     <div className="container">
       <div className="form-card">
-        <h2>Sign Up</h2>
+        <h2 className='h2'>Sign Up</h2>
 
         <div className="input-container">
           <input 
