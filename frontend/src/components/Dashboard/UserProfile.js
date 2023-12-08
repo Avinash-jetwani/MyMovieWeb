@@ -1,36 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import { countries } from 'countries-list';
 import { TailSpin } from 'react-loader-spinner'; 
+import './UserProfile.css'; 
 
 const customStyles = {
-    control: (provided) => ({
-      ...provided,
-      backgroundColor: 'black',
-      color: 'white',
-      width: '300px', // Adjust width as needed
-    }),
-    option: (provided, state) => ({
-      ...provided,
-      backgroundColor: state.isSelected ? 'gray' : 'black',
-      color: 'white',
-      '&:hover': {
-        backgroundColor: 'gray',
-      },
-    }),
-    singleValue: (provided) => ({
-      ...provided,
-      color: 'white',
-    }),
-    menu: (provided) => ({
-      ...provided,
-      backgroundColor: 'black',
-      width: '300px', // Make sure this matches the width of the control
-      // You can also add other styles here as needed
-    }),
-  };
+  control: (provided) => ({
+    ...provided,
+    backgroundColor: 'transparent', // Set to transparent instead of white
+    borderColor: 'var(--gray)', // Use the gray color variable
+    borderWidth: '2px',
+    boxShadow: 'none', // Removes any existing shadows
+    '&:hover': {
+      borderColor: 'var(--primary)', // On hover, use the primary color
+    },
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected ? 'gray' : 'white',
+    color: 'black',
+    '&:hover': {
+      backgroundColor: 'gray',
+    },
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: 'white',
+  }),
+  menu: (provided) => ({
+    ...provided,
+    backgroundColor: 'white',
+    borderColor: 'var(--gray)',
+    borderWidth: '2px',
+    borderRadius: '4px',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+    overflow: 'hidden', // Prevents the border from being cut off
+  }),
+};
+
 
   const countryOptions = Object.entries(countries).map(([countryCode, countryData]) => {
     return {
@@ -149,37 +159,50 @@ const UserProfile = () => {
     };
 
   return (
-    <div>
-      <h2>Edit Profile</h2>
+    <div className="container">
+    <div className="form-card">
+      <h2 className='h2'>Edit Profile</h2>
       <form onSubmit={handleSubmit}>
+
+      <div className="input-container">
         <input
           type="text"
           name="username"
+          placeholder=" "
           value={userData.username}
           onChange={handleInputChange}
-          placeholder="Username"
+          className={`input-field ${userData.username ? 'not-empty' : 'empty'}`}
         />
+         <label htmlFor="username" className="floating-label">Username</label>
         {errors.username && <div className="error">{errors.username}</div>}
+      </div>
 
+      <div className="input-container">
         <input
           type="email"
           name="email"
+          placeholder=" "
           value={userData.email}
           onChange={handleInputChange}
-          placeholder="Email"
+          className={`input-field ${userData.email ? 'not-empty' : 'empty'}`}
         />
+        <label htmlFor="email" className="floating-label">Email</label>
         {errors.email && <div className="error">{errors.email}</div>}
+      </div>
 
+      <div className="input-container">
         <input
             type="date"
             name="dob"
             value={userData.dob}
             onChange={handleInputChange}
-            placeholder="Date of Birth"
+            className={`input-field ${userData.dob ? 'not-empty' : ''}`}
         />
+        <label htmlFor="dob" className="floating-label">Date of Birth</label>
         {errors.dob && <div className="error">{errors.dob}</div>}
+      </div>
 
-
+      <div className="input-container">
         <Select 
           options={countryOptions}
           value={countryOptions.find(option => option.label === userData.country)}
@@ -188,13 +211,22 @@ const UserProfile = () => {
           styles={customStyles}
         />
         {errors.country && <div className="error">{errors.country}</div>}
+      </div>
 
-        <button onClick={handleSubmit} disabled={isLoading}>
+        <button 
+          onClick={handleSubmit} 
+          disabled={isLoading}
+          className="button"
+        >
           {isLoading ? <TailSpin color="#00BFFF" height={20} width={20} /> : 'Save Changes'}
         </button>
+
+        <Link to="/dashboard" className="link">Back to dashboard!</Link>
+
         {serverError && <div className="error">{serverError}</div>}
       </form>
     </div>
+  </div>
   );
 };
 
